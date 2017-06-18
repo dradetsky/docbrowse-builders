@@ -73,7 +73,7 @@ class Config:
 
     @property
     def is_extended_schema(self):
-        return self.schema == standard_schema
+        return self.schema != standard_schema
 
 
 config = Config()
@@ -108,7 +108,7 @@ def insert_type_recs(db, inv_type, inv_recs):
         input_recs = [(rec_name, dash_type, rec[2])
                       for rec_name, rec in inv_recs.items()]
 
-    db.executemany(config.qry_tmpl, input_recs)
+    db.executemany(config.query_tmpl, input_recs)
 
 
 def print_info(inv):
@@ -119,8 +119,8 @@ def print_info(inv):
 
 
 def main(args):
-    if args['-p']:
-        config.db_path = args['-p']
+    if args['-o']:
+        config.db_path = args['-o']
 
     if args['-e']:
         config.schema = '{},\n{}'.format(standard_schema,
