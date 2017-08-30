@@ -86,10 +86,31 @@ def read_objs(path):
     return inv
 
 
+def mk_order_idx(db):
+    sql = ('CREATE INDEX IF NOT EXISTS ix_si_ord ON searchIndex'
+           '(LENGTH(name) ASC, LOWER(name) ASC)')
+    db.execute(sql)
+
+
+def mk_idxs(db):
+    # fetch_idx = ('create index ix_si_fetch on searchIndex'
+    #              '(name collate nocase, type, path)')
+    fetch_idx_u = ('create index ix_si_fetch_u on searchIndex'
+                   '(name collate nocase asc, type, path)')
+    fetch_idx_d = ('create index ix_si_fetch_d on searchIndex'
+                   '(name collate nocase desc, type, path)')
+    order_idx = ('CREATE INDEX IF NOT EXISTS ix_si_ord ON searchIndex'
+                 '(LENGTH(name) ASC, LOWER(name) ASC)')
+    db.execute(fetch_idx_u)
+    db.execute(fetch_idx_d)
+    db.execute(order_idx)
+
+
 def mktab(inv):
     db = sqlite3.connect(config.db_path)
     db.execute('CREATE TABLE searchIndex ({})'.format(config.schema))
     insert_inv_records(db, inv)
+    mk_order_idx(db)
     db.commit()
     db.close()
 
